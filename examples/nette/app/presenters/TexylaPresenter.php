@@ -1,7 +1,7 @@
 <?php
 
-use Nette\Environment, Nette\String, Nette\Image;
-use Nette\Application\RenderResponse, Nette\Application\JsonResponse;
+use Nette\Environment, Nette\Utils\Strings, Nette\Image;
+use Nette\Application\Responses\TextResponse, Nette\Application\Responses\JsonResponse;
 
 /**
  * Texyla presenter
@@ -31,11 +31,11 @@ class TexylaPresenter extends BasePresenter
 	public function startup()
 	{
 		parent::startup();
-		$texy = Environment::getService("Texy");
+		$texy = $this->context->texy;
 		$this->baseFolderPath = $texy->imageModule->fileRoot;
 		$this->baseFolderUri = $texy->imageModule->root;
 		$this->tempDir = WWW_DIR . "/webtemp";
-		$this->tempUri = Environment::getVariable("baseUri") . "/webtemp";
+		$this->tempUri = $this->getHttpRequest()->getUrl()->getBaseUrl() . "/webtemp";
 	}
 
 
@@ -45,9 +45,9 @@ class TexylaPresenter extends BasePresenter
 	 */
 	public function actionPreview()
 	{
-		$texy = Environment::getService("Texy");
+		$texy = $this->context->texy;
 		$html = $texy->process(Environment::getHttpRequest()->getPost("texy"));
-		$this->sendResponse(new RenderResponse($html));
+		$this->sendResponse(new TextResponse($html));
 	}
 
 
@@ -77,7 +77,7 @@ class TexylaPresenter extends BasePresenter
 	{
 		$folderPath = realpath($this->baseFolderPath . ($folder ? "/" . $folder : ""));
 
-		if (!is_dir($folderPath) || !is_writable($folderPath) || !String::startsWith($folderPath, realpath($this->baseFolderPath))) {
+		if (!is_dir($folderPath) || !is_writable($folderPath) || !Strings::startsWith($folderPath, realpath($this->baseFolderPath))) {
 			throw new InvalidArgumentException;
 		}
 
@@ -132,7 +132,7 @@ class TexylaPresenter extends BasePresenter
 			$fileName = $fileInfo->getFileName();
 
 			// skip hidden files, . and ..
-			if (String::startsWith($fileName, "."))
+			if (Strings::startsWith($fileName, "."))
 				continue;
 
 			// filename with folder
@@ -199,7 +199,7 @@ class TexylaPresenter extends BasePresenter
 			Image::fromString(Image::EMPTY_GIF)->send(Image::GIF);
 		}
 
-		$this->terminate()
+		$this->terminate();
 	}
 
 
@@ -232,7 +232,7 @@ class TexylaPresenter extends BasePresenter
 		}
 
 		// move
-		$fileName = String::webalize($file->getName(), ".");
+		$fileName = Strings::webalize($file->getName(), ".");
 		$path = $folderPath . "/" . $fileName;
 
 		if (@$file->move($path)) {
@@ -261,7 +261,7 @@ class TexylaPresenter extends BasePresenter
 	 */
 	public function actionMkDir($folder, $name)
 	{
-		$name = String::webalize($name);
+		$name = Strings::webalize($name);
 		$path = $this->getFolderPath($folder) . "/" . $name;
 
 		if (mkdir($path)) {
@@ -320,7 +320,7 @@ class TexylaPresenter extends BasePresenter
 	public function actionRename($folder, $oldname, $newname)
 	{
 		$oldpath = $this->getFolderPath($folder) . "/" . $oldname;
-		$newpath = $this->getFolderPath($folder) . "/" . String::webalize($newname, ".");
+		$newpath = $this->getFolderPath($folder) . "/" . Strings::webalize($newname, ".");
 
 		if (!file_exists($oldpath)) {
 			$this->sendError("File does not exist.");

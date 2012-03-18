@@ -1,6 +1,6 @@
 <?php
 
-use Nette\Application\AppForm;
+use Nette\Application\UI\Form;
 
 /**
  * Homepage presenter
@@ -13,7 +13,7 @@ class HomepagePresenter extends BasePresenter
 	 */
 	protected function createComponentExampleForm()
 	{
-		$form = new AppForm;
+		$form = new Form();
 
 		$form->addTextarea("text", "Text", 110, 20)
 			->getControlPrototype()->class("texyla");

@@ -2,7 +2,7 @@
 
 namespace WebLoader;
 
-use Nette\IO\SafeStream;
+use Nette\Utils\SafeStream;
 
 /**
  * Web loader
@@ -10,7 +10,7 @@ use Nette\IO\SafeStream;
  * @author Jan Marek
  * @license MIT
  */
-abstract class WebLoader extends \Nette\Application\Control {
+abstract class WebLoader extends \Nette\Application\UI\Control {
 
 	// <editor-fold defaultstate="collapsed" desc="variables">
 

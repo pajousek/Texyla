@@ -2,58 +2,36 @@
 
 /**
  * My Application bootstrap file.
- *
- * @copyright  Copyright (c) 2010 John Doe
- * @package    MyApplication
  */
+use Nette\Application\Routers\Route;
 
 
-use Nette\Debug;
-use Nette\Environment;
-use Nette\Application\Route;
-use Nette\Application\SimpleRouter;
-
-
-
-// Step 1: Load Nette Framework
-// this allows load Nette Framework classes automatically so that
-// you don't have to litter your code with 'require' statements
+// Load Nette Framework
 require __DIR__ . '/../../libs/nette.php';
 
 
+// Configure application
+$configurator = new Nette\Config\Configurator;
 
-// Step 2: Configure environment
-// 2a) enable Nette\Debug for better exception and error visualisation
-Debug::enable();
+// Enable Nette Debugger for error visualisation & logging
+//$configurator->setProductionMode($configurator::AUTO);
+$configurator->enableDebugger(__DIR__ . '/../log');
 
-// 2b) load configuration from config.ini file
-Environment::loadConfig();
+// Enable RobotLoader - this will load all classes automatically
+$configurator->setTempDirectory(__DIR__ . '/../temp');
+$configurator->createRobotLoader()
+	->addDirectory(APP_DIR)
+	->addDirectory(LIBS_DIR)
+	->register();
 
+// Create Dependency Injection container from config.neon file
+$configurator->addConfig(__DIR__ . '/config/config.neon');
+$container = $configurator->createContainer();
 
-
-// Step 3: Configure application
-// 3a) get and setup a front controller
-$application = Environment::getApplication();
-$application->errorPresenter = 'Error';
-//$application->catchExceptions = TRUE;
-
-
-
-// Step 4: Setup application router
-$router = $application->getRouter();
-
-$router[] = new Route('index.php', array(
-	'presenter' => 'Homepage',
-	'action' => 'default',
-), Route::ONE_WAY);
-
-$router[] = new Route('<presenter>/<action>/<id>', array(
-	'presenter' => 'Homepage',
-	'action' => 'default',
-	'id' => NULL,
-));
+// Setup router
+$container->router[] = new Route('index.php', 'Homepage:default', Route::ONE_WAY);
+$container->router[] = new Route('<presenter>/<action>[/<id>]', 'Homepage:default');
 
 
-
-// Step 5: Run the application!
-$application->run();
+// Configure and run the application!
+$container->application->run();

@@ -2,7 +2,7 @@
 
 namespace WebLoader;
 
-use Nette\Web\Html;
+use Nette\Utils\Html;
 use Nette\IComponentContainer;
 
 /**

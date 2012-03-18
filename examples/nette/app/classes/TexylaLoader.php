@@ -14,10 +14,10 @@ class TexylaLoader extends WebLoader\JavaScriptLoader
 	 * @param IComponentContainer parent
 	 * @param string name
 	 */
-	public function __construct(IComponentContainer $parent = null, $name = null) {
-		parent::__construct($parent, $name);
+	public function __construct($baseUri) {
+		parent::__construct();
 
-		$this->tempUri = Environment::getVariable("baseUri") . "webtemp";
+		$this->tempUri = $baseUri . "webtemp";
 		$this->tempPath = WWW_DIR . "/webtemp";
 		$this->sourcePath = APP_DIR . "/../../../texyla";
 

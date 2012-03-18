@@ -38,7 +38,7 @@ class MyTexy extends Texy
 
 		// images
 		$this->imageModule->fileRoot = WWW_DIR . "/files";
-		$this->imageModule->root = Environment::getVariable("baseUri") . "files/";
+		$this->imageModule->root = Environment::getHttpRequest()->getUrl()->getBaseUrl() . "files/";
 
 		// flash, youtube.com, stream.cz, gravatar handlers
 		$this->addHandler('image', array($this, 'youtubeHandler'));
